@@ -47,6 +47,15 @@ lines(seq(AL,AH,0.05),y3*15,col=4,lwd=3)
 ############################ AAPE
 
 
+#it should be here
+findlossoptimal<-function(loss,rg,sep=0.1){
+  tmp<-c()
+  for(i in seq(rg[1],rg[2],sep)){
+    tmp<-c(tmp,mean(loss(i)))
+  }
+  tb=cbind(seq(rg[1],rg[2],sep),tmp)
+  return(list(tb=tb,op=as.numeric(tb[tb[,2]==min(tb[,2]),1])))
+}
 
 Aloss1=function(p,x){
 	sum(AAPE(x,p))
@@ -59,6 +68,15 @@ Aloss2=function(p,x){
 Aloss3=function(p,x){
 	max(AAPE(x,p))
 }
+
+
+##추가함
+AAPE=function(a,b){
+  re=atan(abs(a-b)/a) #MAAPE    
+  re[(a==0)&(b==0)]=0
+  return(re)
+}
+##여기까지
 
 Ay1=c();Ay2=c();Ay3=c()
 for(i in seq(AL,AH,0.05)){
@@ -125,6 +143,21 @@ AL=0
 P1A=findlossoptimal(AAloss1,c(0,5),0.01)$op
 P2A=findlossoptimal(AAloss2,c(0,5),0.01)$op
 P3A=findlossoptimal(AAloss3,c(0,5),0.01)$op
+
+
+
+##Error occurs here 
+##Error in APE(x, p, 0.01) : unused argument (0.01) 
+##4.
+##APE(x, p, 0.01) 
+##3.
+##loss(i) 
+##2.
+##mean(loss(i)) 
+##1.
+##findlossoptimal(Aloss1, c(0, 5), 0.01)
+##result -> p1=p2 = 0
+##however below, p1 = 0.1, and p2 = 0.64
 
 P1=findlossoptimal(Aloss1,c(0,5),0.01)$op
 P2=findlossoptimal(Aloss2,c(0,5),0.01)$op
@@ -387,7 +420,7 @@ thm<<-lambda/m
 tmp<-findlossoptimal(AAloss1GP,c(0,5))
 plot(tmp$tb[,1],tmp$tb[,2])
 
-
+#why is it here?
 findlossoptimal<-function(loss,rg,sep=0.1){
   tmp<-c()
   for(i in seq(rg[1],rg[2],sep)){
@@ -1167,6 +1200,7 @@ test2=ddply(test,.(Store),ff)
 
 
 ## exclude stores why??
+## same 
 excludestore=test2[test2[,2]>test2[,3],1]
 [1]  14  15  28  29  32  46  48  56  63  68  72  73  76  81  88  90  95  96  98 101 105
 [22] 107 111 112 113 114 123 128 129 133 139 142 175
