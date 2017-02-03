@@ -1,3 +1,5 @@
+##this file works well
+
 library(fields)
 library(akima)
 setwd("C:\\Users\\sungil.kim\\Dropbox\\Research_idea\\figs")
