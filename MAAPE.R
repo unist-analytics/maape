@@ -179,8 +179,8 @@ lines(result_maape[,6],col=2)
 plot(result_mape[,7],type="l",lwd=2)
 lines(result_maape[,7],col=2)
 
-sum(result_mape[300:400,6]<result_maape[300:400,6],na.rm=T)
-sum(result_mape[300:400,6]>result_maape[300:400,6],na.rm=T)
+sum(result_mape[300:397,6]<result_maape[300:397,6],na.rm=T)
+sum(result_mape[300:397,6]>result_maape[300:397,6],na.rm=T)
 
 
 sum(result_mape[,8]<result_maape[,8],na.rm=T)
@@ -193,7 +193,6 @@ sum(result_mape[,8]>result_maape[,8],na.rm=T)
 
 test=data.frame(cbind(result_mape[,c(1,8,9)],result_maape[,c(8,9)] ))
 names(test)=c('Store','mape_mape','mape_maape','maape_mape','maape_maape')
-test2=ddply(test,.(Store),ff)
 ff=function(dd){
   c(sum(dd[,2]<dd[,4],na.rm=T),
     sum(dd[,2]>dd[,4],na.rm=T),
@@ -201,11 +200,20 @@ ff=function(dd){
     sum(dd[,3]>dd[,5],na.rm=T)
   )
 }
+test2=ddply(test,.(Store),ff)
 
 ## exclude stores
 excludestore=test2[test2[,2]>test2[,3],1]
-[1]  14  15  28  29  32  46  48  56  63  68  72  73  76  81  88  90  95  96  98 101 105
-[22] 107 111 112 113 114 123 128 129 133 139 142 175
+
+
+
+
+##I dont know what is it
+##[1]  14  15  28  29  32  46  48  56  63  68  72  73  76  81  88  90  95  96  98 101 105
+##[22] 107 111 112 113 114 123 128 129 133 139 142 175
+
+
+
 
 
 stores102=setdiff(all_store, excludestore)
@@ -224,8 +232,7 @@ names(test1)=c('Store','mape_choice','mape_mape','mape_maape','mape_pct'
               ,'maape_choice','maape_mape','maape_maape','maape_pct')
 
 
-postscript("../figs/comparebyMAPE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-
+postscript("C:/Users/Administrator/Desktop/R programming/test/Test/comparebyMAPE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 sorted_test1=test1[order(test1$mape_mape,decreasing =T),]
 plot(sorted_test1$mape_mape,type="b",xlab="",ylab="MAPE",cex=1.5,xlim=c(0,1270))
 points(sorted_test1$maape_mape,col=2)
@@ -235,8 +242,7 @@ dev.off()
 
 
 
-postscript("../figs/comparebyMAAPE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-
+postscript("C:/Users/Administrator/Desktop/R programming/test/Test/comparebyMAAPE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 sorted_test1a=test1[order(test1$mape_maape,decreasing =T),]
 plot(sorted_test1a$mape_maape,type="b",xlab="",ylab="MAAPE",cex=1.5)
 points(sorted_test1a$maape_maape,col=2)
@@ -287,6 +293,8 @@ lines(result_maape[result_mape[,8]<result_maape[,8],8],col=2)
 
 
 cbind(result_mape[result_mape[,8]<result_maape[,8],],result_maape[result_mape[,8]<result_maape[,8],])
+
+library(tsintermittent)
 
 ## Average intermittent interval
 dataset=dat2[dat2[,1]%in%stores102,-c(1,2)]
@@ -371,6 +379,33 @@ mean(aaa$p,na.rm=T)
 
 fit.croston=croston(a, h=10, alpha=0.5)
 
+
+##Error occurs here!
+##Error in `[.data.frame`(dd, , 5) : undefined columns selected 
+##9.
+##stop("undefined columns selected") 
+##8.
+##`[.data.frame`(dd, , 5) 
+##7.
+##dd[, 5] 
+##6.
+##.fun(piece, ...) 
+##5.
+##(function (i) 
+##{
+##  piece <- pieces[[i]]
+##  if (.inform) { ... 
+##    4.
+##    loop_apply(n, do.ply) 
+##    3.
+##    llply(.data = .data, .fun = .fun, ..., .progress = .progress, 
+##          .inform = .inform, .parallel = .parallel, .paropts = .paropts) 
+##    2.
+##    ldply(.data = pieces, .fun = .fun, ..., .progress = .progress, 
+##          .inform = .inform, .parallel = .parallel, .paropts = .paropts) 
+##    1.
+##    ddply(dat1, .(Store, Sku, WeekInDayFmt), ff) 
+    
 
 dat2=ddply(dat1,.(Store,Sku,WeekInDayFmt),ff)
 
