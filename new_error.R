@@ -1,10 +1,13 @@
 ##this file works well
 
+##loading pacakages
 library(fields)
 library(akima)
 setwd("C:\\Users\\sungil.kim\\Dropbox\\Research_idea\\figs")
 
-x=seq(0.1,3,0.05)
+############ Figure 3 ###############
+##
+x=seq(0.1,10,0.1)
 y=sort(x, decreasing = TRUE)
 abc=function(a,b){
 #atan(abs(a-b)/a)
@@ -13,6 +16,7 @@ abc=function(a,b){
 abs((a-b)/(a+b)*2)
 }
 
+##Functions
 AAPE=function(a,b){
 atan(abs(a-b)/a)
 }
@@ -26,9 +30,61 @@ abs(a-b)/a #MAPE
 }
 
 
+##Fig 3 - (a)
+##Visualization of APE in 2D
+
+##Figure image creation
+postscript("Figure 3 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+z=outer(x, y, FUN=APE)
+Z=c(z)
+X=rep(x,length(y))
+Y=rep(y,each=length(x))
+akima.li <- interp(X,Y,Z, duplicate="median")
+image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
+dev.off()
+
+##Figure image plotting
+image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
 
 
-postscript("AAPE_1.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+
+##Fig 3 - (b)
+##APE values on the diagonal line between (A = 0.1, F = 10) and (A = 10, F = 10)
+
+##Figure image creation
+postscript("Figure 3 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+#dat=cbind(X,Y,Z)
+dat_diag=cbind(x,y,diag(z))
+#dat_diag=dat[(dat[,1]+dat[,2]==(max(x)+min(x))),]
+
+plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="APE",type="l",axes=FALSE)
+axis(2, pretty(round(dat_diag[,3],2),3))
+axis(1, at=0:10,labels=c(10:0),line=1)
+mtext("F",1,line=1,at=-0.2)
+
+#axis(1, pretty(dat_diag[,1],10),line=3)
+axis(1, at=0:10,labels=c(0:10),line=3)
+mtext("A",1,line=3,at=-0.2)
+
+dev.off() 
+
+##Figure image plotting
+plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="APE",type="l",axes=FALSE)
+axis(2, pretty(round(dat_diag[,3],2),3))
+axis(1, at=0:10,labels=c(10:0),line=1)
+mtext("F",1,line=1,at=-0.2)
+
+#axis(1, pretty(dat_diag[,1],10),line=3)
+axis(1, at=0:10,labels=c(0:10),line=3)
+mtext("A",1,line=3,at=-0.2)
+
+
+
+##Fig 3 -(c)
+##Visualization of AAPE in 2D
+
+##Figure image creation
+postscript("Figure 3 - (c).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 z=outer(x, y, FUN=AAPE)
 Z=c(z)
 X=rep(x,length(y))
@@ -37,50 +93,75 @@ akima.li <- interp(X,Y,Z, duplicate="median")
 image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
 dev.off() 
 
-postscript("AAPE_2.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+##Figure image plotting
+image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
+
+
+
+##Fig 3 - (d)
+##AAPE values on the diagonal line between (A = 0.1, F = 10) and (A = 10, F = 0)
+
+##Figure image creation
+postscript("Figure 3 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 #dat=cbind(X,Y,Z)
 dat_diag=cbind(x,y,diag(z))
 #dat_diag=dat[(dat[,1]+dat[,2]==(max(x)+min(x))),]
 plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="AAPE",type="l",axes=FALSE)
 axis(2, pretty(round(dat_diag[,3],2),3))
-axis(1, at=0:3,labels=c(3:0),line=1)
+axis(1, at=0:10,labels=c(10:0),line=1)
 mtext("F",1,line=1,at=-0.2)
 
 #axis(1, pretty(dat_diag[,1],10),line=3)
-axis(1, at=0:3,labels=c(0:3),line=3)
+axis(1, at=0:10,labels=c(0:10),line=3)
 mtext("A",1,line=3,at=-0.2)
 
 dev.off() 
 
-dat_diag2= dat_diag[2*x>y,]
-plot(dat_diag2[,1],dat_diag2[,3],xlab="",ylab="APE",type="l",axes=F)
-axis(2, pretty(round(dat_diag2[,3],2),10))
+##Figure image plotting
+plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="AAPE",type="l",axes=F)
+axis(2, pretty(round(dat_diag[,3],2),10))
+axis(1, at=0:10,labels=c(10:0),line=1)
+mtext("F",1,line=1,at=-1)
+axis(1, pretty(dat_diag[,1],10),line=3)
+mtext("A",1,line=3,at=-1)
+
+############ Figure 4 ###############
+
+##Fig 4 - (a)
+## APE
+
+##z=outer(x, y, FUN=APE)
+##Z=c(z)
+##X=rep(x,length(y))
+##Y=rep(y,each=length(x))
+##akima.li <- interp(X,Y,Z, duplicate="median")
+##image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
+
+x=seq(1,10,0.1)
+y=sort(x, decreasing = TRUE)
+dat_diag=cbind(x,y,diag(z))
+##dat_diag2= dat_diag[2*x>y,]
+plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="APE",type="l",axes=F)
+axis(2, pretty(round(dat_diag[,3],2),10))
 axis(1, at=1:10,labels=c(10:1),line=1)
 mtext("F",1,line=1,at=0.2)
 
 axis(1, pretty(dat_diag2[,1],10),line=3)
 mtext("A",1,line=3,at=0.2)
 
-############ Figure 4 ###############
-## APE
-z=outer(x, y, FUN=APE)
-Z=c(z)
-X=rep(x,length(y))
-Y=rep(y,each=length(x))
-akima.li <- interp(X,Y,Z, duplicate="median")
-image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
-
-
 postscript("APE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-	dat_diag=cbind(x,y,diag(z))
-	plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="APE",type="l",axes=FALSE)
-	axis(2, pretty(round(dat_diag[,3],2),3))
-	axis(1, at=1:3,labels=c(3:1),line=1)
-	mtext("F",1,line=1,at=0.8)
-	axis(1, at=0:3,labels=c(0:3),line=3)
-	mtext("A",1,line=3,at=0.8)
+
+
+##dat_diag=cbind(x,y,diag(z))
+##plot(dat_diag[,1],dat_diag2[,3],xlab="",ylab="APE",type="l",axes=FALSE)
+##axis(2, pretty(round(dat_diag2[,3],2),3))
+##axis(1, at=1:10,labels=c(10:1),line=1)
+##mtext("F",1,line=1,at=0.8)
+##	axis(1, at=1:10,labels=c(1:10),line=3)
+##	mtext("A",1,line=3,at=0.8)
 dev.off() 
 
+##Fig 4 - (b)
 ## AAPE
 z=outer(x, y, FUN=AAPE)
 Z=c(z)
