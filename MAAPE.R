@@ -1,560 +1,318 @@
 
-library(plyr)
-library(forecast)
-setwd("/Users/sungilkim/Dropbox/Sungil_MAAPE_(submitted)/code")
+##set up the working directory
+#Choose "MAAPE.R"
+file = file.choose()
+WD = substr(file, 1, nchar(file)-nchar("MAAPE.R"))
+setwd(WD)
 
-##
-fitted_compare=function(a,MEASURE){
-  
-  fit.ets=ets(a)
-  fit.holt <- HoltWinters(a,gamma=FALSE,beta=FALSE) ## Exponential Smoothing
-  fit.arima <- forecast(auto.arima(a),h=10)
-  fit.croston=croston(a, h=10, alpha=0.5)
-  
-  fitted.ets=fit.ets$fitted
-  fitted.holt=fit.holt$fitted[,1]
-  fitted.arima=fit.arima$fitted
-  fitted.croston=fit.croston$fitted
-  
-  aa1=MEASURE(a,fitted.ets)
-  aa2=MEASURE(a[-c(1)],fitted.holt)
-  aa3=MEASURE(a,fitted.arima)
-  aa4=MEASURE(a,fitted.croston)
-  
-  aa1=aa1[!is.na(aa1)];aa2=aa2[!is.na(aa2)];aa3=aa3[!is.na(aa3)];aa4=aa4[!is.na(aa4)]
-  return(c(mean(aa1[aa1<10000]),mean(aa2[aa2<10000]),mean(aa3[aa3<10000]),mean(aa4[aa4<10000])))
-}
+##Output images will be generated here
+dir.create("output data")
 
-fcst_compare=function(chs,x,x10){
-  if(chs==1){
-    fit.ets=ets(x)
-    fcst=forecast(fit.ets,h=10)$mean
-  }
-  if(chs==2){
-    fit.holt <- HoltWinters(x,gamma=FALSE,beta=FALSE)
-    fcst=forecast(fit.holt,h=10)$mean
-  } 
-  if(chs==3){
-    fit.arima <- forecast(auto.arima(x),h=10)
-    fcst=forecast(fit.arima,h=10)$mean
-  } 
-  if(chs==4){
-    fit.croston=croston(a, h=10, alpha=0.5)
-    fcst=fit.croston[1]$mean
-  } 
-  
-  ff1=APE(as.numeric(x10),as.numeric(fcst))
-  ff2=AAPE(as.numeric(x10),as.numeric(fcst))
-  return( c(mean(ff1[ff1<10000]),mean(ff2)))
-  
-}
+############ Figure 1 ###############
+library(Mcomp)
+data(M3)
+library(fma)
 
-AAPE=function(a,b){
-  re=atan(abs(a-b)/a) #MAAPE    
-  re[(a==0)&(b==0)]=0
-  return(re)
-}
-
-MSE=function(a,b){
-  re=(a-b)^2 
-  return(re)
-}
-
-
-SAPE=function(a,b){
-  abs((a-b)/(a+b)*2)
-}
-
-APE=function(a,b){
-  re=abs(a-b)/a #MAPE    
-  re[(a==0)&(b==0)]=0
-  return(re)
-}
-
-##
-dat=read.csv("All833.csv")
-sku833=unique(dat$Sku)
-weekdays=sort(unique(dat$WeekInDayFmt))
-dat1=dat[,c("Store","Sku","WeekInDayFmt","ActualSales")]
-
-dat2=c()
-for(ss in c(2,502)){
-  for(skus in unique(dat1[dat1$Store==ss,]$Sku)){
-    dd=subset(dat1,(Store==ss)&(Sku==skus))  
-    rr=rep(0,105)
-    rr[match(dd$WeekInDayFmt,weekdays)]=dd$ActualSales
-    if(sum(rr)>0) dat2=rbind(dat2,c(ss,skus,rr))
-  }
-}
-
-
-## distance matrix
-
-a=as.ts(dat2[1,c(3:95)])
-b=as.ts(dat2[2,c(3:95)])
-
-result_mape=c()
-for(i in 1:nrow(dat2)){
-  print(i)
-  x=as.ts(dat2[i,c(3:95)])
-  x10=as.ts(dat2[i,c(96:105)])
-  min_value=fitted_compare(x,APE)
-  choice=order(min_value)[1]
-  
-  result_mape=rbind(result_mape,c(min_value,choice,fcst_compare(choice,x,x10),round(sum(x==0)/length(x),2)))
-}
-
-result_maape=c()
-for(i in 1:nrow(dat2)){
-  x=as.ts(dat2[i,c(3:95)])
-  x10=as.ts(dat2[i,c(96:105)])
-  min_value=fitted_compare(x,AAPE)
-  choice=order(min_value)[1]
-  
-  result_maape=rbind(result_maape,c(min_value,choice,fcst_compare(choice,x,x10)))
-}
-
-par(mfrow=c(1,1))
-plot(result_mape[,6],type="l",lwd=2)
-lines(result_maape[,6],col=2)
-
-plot(result_mape[result_mape[,7]>result_maape[,7],7],type="l",lwd=2)
-lines(result_maape[result_mape[,7]>result_maape[,7],7],col=2)
-
-
-
-
-############################## whole data
-
-
-dat833=read.csv("dat833.csv")
-
-all_store=unique(dat833$Store)
-dat2=c()
-for(ss in all_store){
-  skusinstore=unique(dat833[dat833$Store==ss,]$Sku)
-  dd1=subset(dat833,(Store==ss))
-  for(skus in skusinstore){
-    dd=subset(dd1,(Sku==skus))  
-    rr=rep(0,105)
-    rr[match(dd$WeekInDayFmt,weekdays)]=dd$Sales
-    if(sum(rr)>0) dat2=rbind(dat2,c(ss,skus,rr))
-  }
-}
-
-
-result_mape=c()
-for(i in 1501:nrow(dat2)){
-  print(i)
-  x=as.ts(dat2[i,c(3:95)])
-  x10=as.ts(dat2[i,c(96:105)])
-  min_value=fitted_compare(x,APE)
-  choice=order(min_value)[1]
-  
-  result_mape=rbind(result_mape,c(dat2[i,c(1:2)],min_value,choice,fcst_compare(choice,x,x10),round(sum(x==0)/length(x),2)))
-}
-
-result_maape=c()
-for(i in 1501:nrow(dat2)){
-  print(i)
-  x=as.ts(dat2[i,c(3:95)])
-  x10=as.ts(dat2[i,c(96:105)])
-  min_value=fitted_compare(x,AAPE)
-  choice=order(min_value)[1]
-  
-  result_maape=rbind(result_maape,c(dat2[i,c(1:2)],min_value,choice,fcst_compare(choice,x,x10),round(sum(x==0)/length(x),2)))
-}
-
-#write.csv(result_mape, file = "result_mape833.csv", row.names = FALSE)
-#write.csv(result_maape, file = "result_maape833.csv", row.names = FALSE)
-
-head(result_mape)
-
-## visualization
-
-par(mfrow=c(1,1))
-plot(result_mape[,6],type="l",lwd=2)
-lines(result_maape[,6],col=2)
-
-plot(result_mape[,7],type="l",lwd=2)
-lines(result_maape[,7],col=2)
-
-sum(result_mape[300:397,6]<result_maape[300:397,6],na.rm=T)
-sum(result_mape[300:397,6]>result_maape[300:397,6],na.rm=T)
-
-
-sum(result_mape[,8]<result_maape[,8],na.rm=T)
-sum(result_mape[,8]>result_maape[,8],na.rm=T)
-sum(result_mape[,9]<result_maape[,9],na.rm=T)
-sum(result_mape[,9]>result_maape[,9],na.rm=T)
-
-sum(result_mape[,8]<result_maape[,8],na.rm=T)
-sum(result_mape[,8]>result_maape[,8],na.rm=T)
-
-test=data.frame(cbind(result_mape[,c(1,8,9)],result_maape[,c(8,9)] ))
-names(test)=c('Store','mape_mape','mape_maape','maape_mape','maape_maape')
-ff=function(dd){
-  c(sum(dd[,2]<dd[,4],na.rm=T),
-    sum(dd[,2]>dd[,4],na.rm=T),
-    sum(dd[,3]<dd[,5],na.rm=T),
-    sum(dd[,3]>dd[,5],na.rm=T)
-  )
-}
-test2=ddply(test,.(Store),ff)
-
-## exclude stores
-excludestore=test2[test2[,2]>test2[,3],1]
-
-
-
-
-##I dont know what is it
-##[1]  14  15  28  29  32  46  48  56  63  68  72  73  76  81  88  90  95  96  98 101 105
-##[22] 107 111 112 113 114 123 128 129 133 139 142 175
-
-
-
-
-
-stores102=setdiff(all_store, excludestore)
-
-result_mape2=result_mape[result_mape[,1]%in%stores102,]
-result_maape2=result_maape[result_maape[,1]%in%stores102,]
-
-
-sum(result_mape2[,8]<result_maape2[,8],na.rm=T)
-sum(result_mape2[,8]>result_maape2[,8],na.rm=T)
-sum(result_mape2[,9]<result_maape2[,9],na.rm=T)
-sum(result_mape2[,9]>result_maape2[,9],na.rm=T)
-
-test1=data.frame(cbind(result_mape2[,c(1,7,8,9,10)],result_maape2[,c(7,8,9,10)] ))
-names(test1)=c('Store','mape_choice','mape_mape','mape_maape','mape_pct'
-              ,'maape_choice','maape_mape','maape_maape','maape_pct')
-
-
-postscript("C:/Users/Administrator/Desktop/R programming/test/Test/comparebyMAPE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-sorted_test1=test1[order(test1$mape_mape,decreasing =T),]
-plot(sorted_test1$mape_mape,type="b",xlab="",ylab="MAPE",cex=1.5,xlim=c(0,1270))
-points(sorted_test1$maape_mape,col=2)
-legend(970,5.5, c("MAPE", "MAAPE"), col = 1:2,
-       pch = 1, cex = 1.0)
+postscript("./output data/Figure 1.eps",width = 8.0, height = 3.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(c(1:36),productC,ylab="Unit sold",type="b",xlab="Month",lwd=3)
+abline(v=24.5,lty=2,lwd=3)
 dev.off() 
 
 
+############ Figure 3 ###############
+library(fields)
+library(akima)
 
-postscript("C:/Users/Administrator/Desktop/R programming/test/Test/comparebyMAAPE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-sorted_test1a=test1[order(test1$mape_maape,decreasing =T),]
-plot(sorted_test1a$mape_maape,type="b",xlab="",ylab="MAAPE",cex=1.5)
-points(sorted_test1a$maape_maape,col=2)
-legend(1100,1.4, c("MAPE", "MAAPE"), col = 1:2,
-       pch = 1, cex = 1.0)
-dev.off() 
 
-
-
-
-
-ff2=function(dd){
-  c(item_count=nrow(dd),
-    zero_pct2=round(mean(dd$maape_pct),2),
-    mape_m1=sum(dd$mape_choice==1),
-    mape_m2=sum(dd$mape_choice==2),
-    mape_m3=sum(dd$mape_choice==3),
-    mape_m4=sum(dd$mape_choice==4),
-    maape_m1=sum(dd$maape_choice==1),
-    maape_m2=sum(dd$maape_choice==2),
-    maape_m3=sum(dd$maape_choice==3),
-    maape_m4=sum(dd$maape_choice==4),
-    mape_mape1=sum(dd[,3]<dd[,7],na.rm=T), #mape_mape is better than maape_mape
-    mape_maape1=sum(dd[,3]>dd[,7],na.rm=T),#maape_mape is better than mape_mape
-    maape_mape1=sum(dd[,4]<dd[,8],na.rm=T),#mape_maape is better than maape_maape
-    maape_maape1=sum(dd[,4]>dd[,8],na.rm=T)#maape_maape is better than mape_maape
-  )
-}
-test2=ddply(test1,.(Store),ff2)
-sum(test2$maape_m1)+
-sum(test2$maape_m2)+
-sum(test2$maape_m3)+
-sum(test2$maape_m4)
-
-
-dat_store2=dat2[dat2[,1]==2,]
-par(mfrow=c(1,1))
-plot(dat_store2[1,3:107],type="l",lwd=2,xlab="Weeks",ylab="Sales",ylim=c(0,100))
-for(k in 2:16){
-  lines(dat_store2[k,3:107],lwd=2)
-}
-write.csv(dat_store2,'dat_store2.csv')
-
-
-plot(result_mape[result_mape[,8]<result_maape[,8],8],type="l",lwd=2)
-lines(result_maape[result_mape[,8]<result_maape[,8],8],col=2)
-
-
-
-cbind(result_mape[result_mape[,8]<result_maape[,8],],result_maape[result_mape[,8]<result_maape[,8],])
-
-library(tsintermittent)
-
-## Average intermittent interval
-dataset=dat2[dat2[,1]%in%stores102,-c(1,2)]
-aaa=idclass(t(dataset))
-mean(aaa$p,na.rm=T)
-
-##############################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-fit.croston=croston(a, h=10, alpha=0.5)
-
-
-##Error occurs here!
-##Error in `[.data.frame`(dd, , 5) : undefined columns selected 
-##9.
-##stop("undefined columns selected") 
-##8.
-##`[.data.frame`(dd, , 5) 
-##7.
-##dd[, 5] 
-##6.
-##.fun(piece, ...) 
-##5.
-##(function (i) 
-##{
-##  piece <- pieces[[i]]
-##  if (.inform) { ... 
-##    4.
-##    loop_apply(n, do.ply) 
-##    3.
-##    llply(.data = .data, .fun = .fun, ..., .progress = .progress, 
-##          .inform = .inform, .parallel = .parallel, .paropts = .paropts) 
-##    2.
-##    ldply(.data = pieces, .fun = .fun, ..., .progress = .progress, 
-##          .inform = .inform, .parallel = .parallel, .paropts = .paropts) 
-##    1.
-##    ddply(dat1, .(Store, Sku, WeekInDayFmt), ff) 
-    
-
-dat2=ddply(dat1,.(Store,Sku,WeekInDayFmt),ff)
-
-x=seq(0.1,3,0.05)
+x=seq(0.1,10,0.1)
 y=sort(x, decreasing = TRUE)
 abc=function(a,b){
-#atan(abs(a-b)/a)
-#(a-b)^2  # MSE
-#abs(a-b)/a #MAPE
 abs((a-b)/(a+b)*2)
 }
 
-
-
-aa=APE(a,b)
-AAPE(a,b)
-
-dat_aape=matrix(0,nrow(dat2)-1,nrow(dat2))
-for(i in 1:nrow(dat_aape)){
-  for (j in (i+1):ncol(dat_aape)){
-    dat_aape[i,j]=mean(AAPE(dat2[i,-c(1:2)],dat2[j,-c(1:2)]))
-  }
+AAPE=function(a,b){
+atan(abs(a-b)/a)
 }
 
-##
-result=c()
-for(i in 1:(nrow(dat2)-1)){
-  for (j in (i+1):nrow(dat2)){
-    result=rbind(result,c(dat2[i,c(1:2)],dat2[j,c(1:2)],mean(AAPE(dat2[i,-c(1:2)],dat2[j,-c(1:2)]))))
-  }
+SAPE=function(a,b){
+abs((a-b)/(a+b)*2)
 }
 
-result2=cbind(result,as.numeric(result[,1]==result[,3]))
-result3=cbind(result,as.numeric(result[,2]==result[,4]))
-result2=result2[order(result2[,5]),]
-result3=result3[order(result3[,5]),]
-par(mfrow=c(2,2))
-plot(result2[,5],result2[,6])
-plot(result3[,5],result3[,6])
-plot(result3[,6])
-###
-result=c()
-for(i in 1:(nrow(dat2)-1)){
-  for (j in (i+1):nrow(dat2)){
-    aa=APE(dat2[i,-c(1:2)],dat2[j,-c(1:2)])
-    result=rbind(result,c(dat2[i,c(1:2)],dat2[j,c(1:2)],mean(aa[aa<10000])))
-  }
+APE=function(a,b){
+abs(a-b)/a #MAPE
 }
 
-result4=cbind(result,as.numeric(result[,1]==result[,3]))
-result5=cbind(result,as.numeric(result[,2]==result[,4]))
-result4=result4[order(result4[,5]),]
-result5=result5[order(result5[,5]),]
-plot(result4[,5],result4[,6])
-plot(result5[,5],result5[,6])
-plot(result5[,6])
 
+##Fig 3 - (a)
 
-##
-
-
-postscript("AAPE_1.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-z=outer(x, y, FUN=AAPE)
-Z=c(z)
-X=rep(x,length(y))
-Y=rep(y,each=length(x))
-akima.li <- interp(X,Y,Z, duplicate="median")
-image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
-dev.off() 
-
-postscript("AAPE_2.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-#dat=cbind(X,Y,Z)
-dat_diag=cbind(x,y,diag(z))
-#dat_diag=dat[(dat[,1]+dat[,2]==(max(x)+min(x))),]
-plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="AAPE",type="l",axes=FALSE)
-axis(2, pretty(round(dat_diag[,3],2),3))
-axis(1, at=0:3,labels=c(3:0),line=1)
-mtext("F",1,line=1,at=-0.2)
-
-#axis(1, pretty(dat_diag[,1],10),line=3)
-axis(1, at=0:3,labels=c(0:3),line=3)
-mtext("A",1,line=3,at=-0.2)
-
-dev.off() 
-
-dat_diag2= dat_diag[2*x>y,]
-plot(dat_diag2[,1],dat_diag2[,3],xlab="",ylab="APE",type="l",axes=F)
-axis(2, pretty(round(dat_diag2[,3],2),10))
-axis(1, at=1:10,labels=c(10:1),line=1)
-mtext("F",1,line=1,at=0.2)
-
-axis(1, pretty(dat_diag2[,1],10),line=3)
-mtext("A",1,line=3,at=0.2)
-
-############ Figure 4 ###############
-## APE
+postscript("./output data/Figure 3 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 z=outer(x, y, FUN=APE)
 Z=c(z)
 X=rep(x,length(y))
 Y=rep(y,each=length(x))
 akima.li <- interp(X,Y,Z, duplicate="median")
 image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
+dev.off()
 
 
-postscript("APE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-	dat_diag=cbind(x,y,diag(z))
-	plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="APE",type="l",axes=FALSE)
-	axis(2, pretty(round(dat_diag[,3],2),3))
-	axis(1, at=1:3,labels=c(3:1),line=1)
-	mtext("F",1,line=1,at=0.8)
-	axis(1, at=0:3,labels=c(0:3),line=3)
-	mtext("A",1,line=3,at=0.8)
+
+##Fig 3 - (b)
+
+postscript("./output data/Figure 3 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+dat_diag=cbind(x,y,diag(z))
+plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="APE",type="l",axes=FALSE)
+axis(2, pretty(round(dat_diag[,3],2),3))
+axis(1, at=0:10,labels=c(10:0),line=1)
+mtext("F",1,line=1,at=-0.2)
+axis(1, at=0:10,labels=c(0:10),line=3)
+mtext("A",1,line=3,at=-0.2)
 dev.off() 
 
-## AAPE
+
+##Fig 3 -(c)
+
+postscript("./output data/Figure 3 - (c).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 z=outer(x, y, FUN=AAPE)
 Z=c(z)
 X=rep(x,length(y))
 Y=rep(y,each=length(x))
 akima.li <- interp(X,Y,Z, duplicate="median")
 image.plot(akima.li,add=FALSE,xlab="A", ylab="F")
-
-
-postscript("AAPE.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-	dat_diag=cbind(x,y,diag(z))
-	plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="AAPE",type="l",axes=FALSE)
-	axis(2, pretty(round(dat_diag[,3],2),10))
-	axis(1, at=1:3,labels=c(3:1),line=1)
-	mtext("F",1,line=1,at=0.8)
-	axis(1, at=1:3,labels=c(1:3),line=3)
-	mtext("A",1,line=3,at=0.8)
 dev.off() 
 
 
-############## M3 data ###############
+##Fig 3 - (d)
+postscript("./output data/Figure 3 - (d).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+dat_diag=cbind(x,y,diag(z))
+plot(dat_diag[,1],dat_diag[,3],xlab="",ylab="AAPE",type="l",axes=FALSE)
+axis(2, pretty(round(dat_diag[,3],2),3))
+axis(1, at=0:10,labels=c(10:0),line=1)
+mtext("F",1,line=1,at=-0.2)
+axis(1, at=0:10,labels=c(0:10),line=3)
+mtext("A",1,line=3,at=-0.2)
+dev.off() 
 
 
 
-library(Mcomp)
-data(M3)
-plot(M3$N0647)
-library(fma)
-#postscript("lubricant.eps",width = 8.0, height = 3.0, horizontal = FALSE, onefile = FALSE, paper = "special")
-plot(c(1:36),productC,ylab="Unit sold",type="b",xlab="Month",lwd=3)
-abline(v=24.5,lty=2,lwd=3)
-#dev.off() 
+############ Figure 4 ###############
+
+
+##Fig 4 - (a)
+
+z=outer(x, y, FUN=APE)
+Z=c(z)
+X=rep(x,length(y))
+Y=rep(y,each=length(x))
+
+postscript("./output data/Figure 4 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+dat_diag=cbind(x,y,diag(z))
+dat_diag2= dat_diag[9.2>y,]
+plot(dat_diag2[,1],dat_diag2[,3],xlab="",ylab="APE",type="l",axes=FALSE)
+axis(2, pretty(round(dat_diag2[,3],2),3))
+axis(1, at=1:10,labels=c(10:1),line=1)
+mtext("F",1,line=1,at=-0.2)
+axis(1, at=1:10,labels=c(1:10),line=3)
+mtext("A",1,line=3,at=-0.2)
+dev.off() 
+
+
+##Fig 4 - (b)
+
+z=outer(x, y, FUN=AAPE)
+Z=c(z)
+X=rep(x,length(y))
+Y=rep(y,each=length(x))
+
+postscript("./output data/Figure 4 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+dat_diag=cbind(x,y,diag(z))
+dat_diag3= dat_diag[9*x>y,]
+plot(dat_diag3[,1],dat_diag3[,3],xlab="",ylab="AAPE",type="l",axes=FALSE)
+axis(2, pretty(round(dat_diag3[,3],2),10))
+axis(1, at=1:10,labels=c(10:1),line=1)
+mtext("F",1,line=1,at=0.8)
+axis(1, at=1:10,labels=c(1:10),line=3)
+mtext("A",1,line=3,at=0.8)
+dev.off() 
+
+
+############ Figure 5 ###############
+
+x=seq(0,6,0.1)
+y=atan(x)
+
+
+x2=seq(1.5,6,0.1)
+y2=pi/2-1/x2
+
+postscript("./output data/Figure 5.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(x,y,type="l",ylab="y",lwd=2,ylim=c(0,2))
+lines(x,x,lwd=2,lty=2)
+lines(x2,y2,col=2,lwd=2)
+legend(4, 0.5, c("y=arctan(x)", "y=x", "y=pi/2-1/x"), col = c(1, 1, 2),
+       box.col  ="white",lwd=c(2,2,2),lty = c(1, 2, 1),  merge = T, bg = "gray90")
+dev.off()
+
+
+############ Figure 6 & 7 ###############
+
+AL<<-0
+AH<<-5
+
+findlossoptimal<-function(loss,rg,sep=0.1){
+  tmp<-c()
+  for(i in seq(rg[1],rg[2],sep)){
+    tmp<-c(tmp,mean(loss(i)))
+  }
+  tb=cbind(seq(rg[1],rg[2],sep),tmp)
+  return(list(tb=tb,op=as.numeric(tb[tb[,2]==min(tb[,2]),1])))
+}
+
+APE=function(A,P,rp=0.01){
+  A[A==0]=rp
+  abs(1-P/A)
+}
+
+AAPE=function(A,P){
+  tmp<-cbind(A,P)
+  tmp[rowSums(tmp)==0,]=0.1
+  out=atan(abs(1-tmp[,2]/tmp[,1]))
+  return(out)
+}
+
+Aloss1NB=function(p){
+  rng=c(0:(50*m))
+  fx<-dnbinom(rng,r,mu=m)
+  sum(APE(rng,p,rp=0.01)*(fx))
+}
+
+Aloss1UD=function(p){
+  rng=c(0:5)
+  fx<-rep(1/6,6)
+  sum(APE(rng,p,rp=0.01)*(fx))
+}
+
+Aloss2UD=function(p){
+  rng=c(0:5)
+  fx<-rep(1/6,6)
+  max(sum(APE(rng[rng<p],p,rp=0.01)*fx[rng<p]),sum(APE(rng[rng>=p],p,rp=0.01)*fx[rng>=p])) 
+}
+
+Aloss2NB=function(p){
+  rng=c(0:(50*m))
+  fx<-dnbinom(rng,r,mu=m)
+  max(sum(APE(rng[rng<p],p,rp=0.01)*fx[rng<p]),sum(APE(rng[rng>=p],p,rp=0.01)*fx[rng>=p])) 
+}
+
+SE1NB=function(p){
+  rng=c(0:(50*m))
+  fx<-dnbinom(rng,r,mu=m)
+  sum(SE(rng,p)*(fx))
+}
+
+AAloss1UD=function(p){
+  rng=c(0:5)
+  fx<-rep(1/6,6)
+  sum(AAPE(rng,p)*(fx))
+}
+
+AAloss2UD=function(p){
+  rng=c(0:5)
+  fx<-rep(1/6,6)
+  if(p==0) return(sum(AAPE(rng[rng>=p],p)*fx[rng>=p]))
+  if(p>0) return(max(sum(AAPE(rng[rng<p],p)*fx[rng<p]),sum(AAPE(rng[rng>=p],p)*fx[rng>=p])))
+}
+
+AAloss1NB=function(p){
+  rng=c(0:(50*m))
+  fx<-dnbinom(rng,r,mu=m)
+  sum(AAPE(rng,p)*(fx))
+}
+
+AAloss2NB=function(p){
+  rng=c(0:(50*m))
+  fx<-dnbinom(rng,r,mu=m)
+  if(p==0) return(sum(AAPE(rng[rng>=p],p)*fx[rng>=p]))
+  if(p>0) return(max(sum(AAPE(rng[rng<p],p)*fx[rng<p]),sum(AAPE(rng[rng>=p],p)*fx[rng>=p])))
+  
+}
+
+out=c()
+for(pp in seq(0.001,0.999,0.001)){
+  out<-c(out,abs(log(0.15)/log(pp)*(1-pp)/pp-2.5))
+}
+
+p=seq(0.001,0.999,0.001)[out==min(out)]
+r<<-log(0.15)/log(p)
+m<<-r*(1-p)/p
+
+tmp<-findlossoptimal(AAloss1NB,c(0,5))
+
+AD=function(A,P){
+  abs(A-P)
+}
+
+AD1GP<-function(p){
+  rng=c(0:(50*m))
+  lambda=thm*m
+  fx<-as.numeric(lapply(rng,GP,lambda))
+  sum(AD(rng,p)*(fx))
+}
+
+AD1NB=function(p){
+  rng=c(0:(50*m))
+  fx<-dnbinom(rng,r,mu=m)
+  sum(AD(rng,p)*(fx))
+}
+
+AUD1=findlossoptimal(Aloss1UD,c(0,5),0.01)$op 
+AUD2=findlossoptimal(Aloss2UD,c(0,5),0.01)$op 
+AAUD1=findlossoptimal(AAloss1UD,c(0,5),0.01)$op 
+AAUD2=max(findlossoptimal(AAloss2UD,c(0,5),0.01)$op )
+
+ADNB<- findlossoptimal(AD1NB,c(0,5),0.01)$op
+ANB1=findlossoptimal(Aloss1NB,c(0,5),0.01)$op 
+ANB2=findlossoptimal(Aloss2NB,c(0,5),0.01)$op 
+AANB1=findlossoptimal(AAloss1NB,c(0,5),0.01)$op 
+AANB2=max(findlossoptimal(AAloss2NB,c(0,5),0.01)$op )
+
+
+###FIGURE 6-A
+postscript("./output data/Figure 6 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),AUD1),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
+lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AAUD1),col=2,lwd=3,lty=2)
+abline(v=2.5,col=1,lty=3,lwd=3);
+dev.off() 
+
+
+###figure 6-B
+postscript("./output data/Figure 6 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),AUD2),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
+lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AAUD2),col=2,lwd=3,lty=2)
+abline(v=2.5,col=1,lty=3,lwd=3);
+dev.off() 
+
+
+###fiugre 7-A
+postscript("./output data/Figure 7 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),ANB1),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
+lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AANB1),col=2,lwd=3,lty=2)
+abline(v=ADNB,col=1,lty=3,lwd=2)
+abline(v=2.5,col=2,lty=1,lwd=1)
+dev.off() 
+
+
+###figur 7-B
+postscript("./output data/Figure 7 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),ANB2),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
+lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AANB2),col=2,lwd=3,lty=2)
+abline(v=ADNB,col=1,lty=3,lwd=2)
+abline(v=2.5,col=2,lty=1,lwd=1)
+dev.off() 
+
+
+############ Figure 8 ###############
 
 productC[1:24]
-
 
 F=mean(productC[1:24])
 
@@ -589,7 +347,7 @@ mean(APE(productC[c(28,29,32,34)],F))
 mean(APE(productC[c(28,29,32,34)],c(6,1.1,0.9,1.1)))
 
 
-postscript("lubricant_plot.eps",width = 5.0, height = 5.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+postscript("./output data/Figure 8.eps",width = 5.0, height = 5.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 plot(c(25:36),productC[25:36],type="l",xlab="Month", ylab="Sales",lwd=3, ylim=c(-0.5,7.5))
 abline(h=F,col=4,lwd=3,lty=2)
 lines(c(25:36),c(0.1,-0.1,0.1,7,1.1,0.1,-0.1,0.9,0.1,1.1,-0.1,0.1),col=2,lwd=3,lty=3)
@@ -597,29 +355,155 @@ legend(31.5, 7, c("Actual", "Forecast 1", "Forecast 2"), col = c(1,4,2),
 lty = c(1,2,3), lwd=c(3,3,3),cex=0.9,merge = T,box.col="white")
 dev.off() 
 
-library(xtable)
-DD=data.frame(cbind(c(productC),APE(productC,F),AAPE(productC,F)))
 
-xtable(DD)
+############ Figure 9 ###############
 
-###################################
+dat=read.csv("./All833.csv")
+sku833=unique(dat$Sku)
+weekdays=sort(unique(dat$WeekInDayFmt))
 
-x=seq(0,6,0.1)
-y=atan(x)
+dat833=read.csv("./dat833.csv")
+
+all_store=unique(dat833$Store)
+dat2=c()
+for(ss in all_store){
+  skusinstore=unique(dat833[dat833$Store==ss,]$Sku)
+  dd1=subset(dat833,(Store==ss))
+  for(skus in skusinstore){
+    dd=subset(dd1,(Sku==skus))  
+    rr=rep(0,105)
+    rr[match(dd$WeekInDayFmt,weekdays)]=dd$Sales
+    if(sum(rr)>0) dat2=rbind(dat2,c(ss,skus,rr))
+  }
+}
+
+outsample_compare=function(chs,x,x10){
+  if(chs==1){
+    fit.ets=ets(x)
+    fcst=forecast(fit.ets,h=10)$mean
+  }
+  if(chs==2){
+    fit.holt <- HoltWinters(x,gamma=FALSE,beta=FALSE)
+    fcst=forecast(fit.holt,h=10)$mean
+  } 
+  if(chs==3){
+    fit.arima <- forecast(auto.arima(x),h=10)
+    fcst=forecast(fit.arima,h=10)$mean
+  } 
+  if(chs==4){
+    fit.croston=croston(x, h=10, alpha=0.5)
+    fcst=fit.croston[1]$mean
+  } 
+  
+  ff1=APEforReal(as.numeric(x10),as.numeric(fcst))
+  ff2=AAPEforReal(as.numeric(x10),as.numeric(fcst))
+  denom=mean(abs(x[2:length(x)]-x[1:(length(x)-1)])) 
+  ff3=ASE(as.numeric(x10),as.numeric(fcst),denom)
+  return( c(mean(ff1[ff1<10000]),mean(ff2),mean(ff3)))
+  
+}
 
 
-x2=seq(1.5,6,0.1)
-y2=pi/2-1/x2
+result1=c()
+result2=c()
+result3=c()
+result4=c()
+result5=c()
 
-postscript("arctan.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+rows<-c(2,4,8,6)
+demand<-dat2[rows,-c(1:2)]
 
-plot(x,y,type="l",ylab="y",lwd=2,ylim=c(0,2))
-lines(x,x,lwd=2,lty=2)
-lines(x2,y2,col=2,lwd=2)
 
-legend(4, 0.5, c("y=arctan(x)", "y=x", "y=pi/2-1/x"), col = c(1, 1, 2),
-       box.col  ="white",lwd=c(2,2,2),lty = c(1, 2, 1),  merge = T, bg = "gray90")
+##Figure 9 summation
 
-dev.off()
+postscript("./output data/Figure 9 - Summation.eps",width = 12.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(demand[1,],type="l",xlab="Weeks",ylab="Sales",cex.lab=1.4,ylim=c(0,110),lwd=2,col=1)
+points(demand[1,],pch=1,col=1)
+for(j in 2:4){
+  lines(demand[j,],type="l",lwd=2,col=j)
+  points(demand[j,],pch=j,col=j)
+}
+legend(95,90, c("SKU A","SKU B","SKU C","SKU D"), col = 1:4, pch = c(1,2,3,4))
+dev.off() 
 
+
+##Figure 9-a
+postscript("./output data/Figure 9 - skuA.eps",width = 12.0, height = 4.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(demand[1,],type="l",xlab="Weeks",ylab="Sales of SKU D",cex.lab=1.4,lwd=2,col=1)
+points(demand[1,],pch=1,col=1)
+dev.off() 
+
+
+##Figure 9-b
+postscript("./output data/Figure 9 - skuB.eps",width = 12.0, height = 4.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(demand[2,],type="l",xlab="Weeks",ylab="Sales of SKU A",cex.lab=1.4,lwd=2,col=1)
+points(demand[2,],pch=1,col=1)
+dev.off() 
+
+
+##Figure 9-c
+postscript("./output data/Figure 9 - skuC.eps",width = 12.0, height = 4.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(demand[3,],type="l",xlab="Weeks",ylab="Sales of SKU B",cex.lab=1.4,lwd=2,col=1)
+points(demand[3,],pch=1,col=1)
+dev.off() 
+
+
+##Figue 9-d
+postscript("./output data/Figure 9 - skuD.eps",width = 12.0, height = 4.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+plot(demand[4,],type="l",xlab="Weeks",ylab="Sales of SKU C",cex.lab=1.4,lwd=2,col=1)
+points(demand[4,],pch=1,col=1)
+dev.off() 
+
+
+############ Figure 10 ###############
+
+SAPE=function(a,b){
+  re=abs((a-b)/(a+b)*2)
+  re[(a==0)&(b==0)]=0
+  return(re)
+}
+
+sim<-function(v){
+  result=c()
+  n=10
+  true=rnbinom(n,2,mu=1)
+  for(k in 1:100){
+    
+    actual1=true+rnorm(n,0,0.01)
+    actual2=true+rnorm(n,0,0.04)
+    
+    if(0){
+      plot(true,ylim=c(-0.5,2.5))
+      lines(actual1,col=2)
+      lines(actual2,col=4)
+    }
+    
+    
+    d1=mean(APE(true,actual1,rp=v),na.rm=T)
+    d2=mean(APE(true,actual2,rp=v),na.rm=T)
+    
+    d3=mean(AAPE(true,actual1),na.rm=T)
+    d4=mean(AAPE(true,actual2),na.rm=T)
+    
+    d5=mean(SAPE(true,actual1),na.rm=T)
+    d6=mean(SAPE(true,actual2),na.rm=T)
+    
+    
+    result=rbind(result,c(d1<=d2,d3<=d4,d5<=d6))
+    #if(is.na(d5<=d6)) print(cbind(true,actual1,actual2))
+    
+  }
+  return(colSums(result))
+}
+
+pp<-c()
+for(vv in seq(1:1000)){
+  pp<-rbind(pp,sim(0.01))
+}
+simple<-data.frame(1-pp[,1:2]/100)
+names(simple)<-c("MAPE","MAAPE")
+
+postscript("./output data/Figure 10.eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
+boxplot(as.data.frame(simple),xlab="",ylab="Error rate",cex.lab=1.5)
+dev.off() 
 
