@@ -276,7 +276,7 @@ AANB1=findlossoptimal(AAloss1NB,c(0,5),0.01)$op
 AANB2=max(findlossoptimal(AAloss2NB,c(0,5),0.01)$op )
 
 
-###FIGURE 6-A
+###Figure 6-A
 postscript("./output data/Figure 6 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),AUD1),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AAUD1),col=2,lwd=3,lty=2)
@@ -284,7 +284,7 @@ abline(v=2.5,col=1,lty=3,lwd=3);
 dev.off() 
 
 
-###figure 6-B
+###Figure 6-B
 postscript("./output data/Figure 6 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),AUD2),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AAUD2),col=2,lwd=3,lty=2)
@@ -292,7 +292,7 @@ abline(v=2.5,col=1,lty=3,lwd=3);
 dev.off() 
 
 
-###fiugre 7-A
+###Fiugre 7-A
 postscript("./output data/Figure 7 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),ANB1),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AANB1),col=2,lwd=3,lty=2)
@@ -301,7 +301,7 @@ abline(v=2.5,col=2,lty=1,lwd=1)
 dev.off() 
 
 
-###figur 7-B
+###Figure 7-B
 postscript("./output data/Figure 7 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),ANB2),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AANB2),col=2,lwd=3,lty=2)
@@ -448,7 +448,7 @@ points(demand[3,],pch=1,col=1)
 dev.off() 
 
 
-##Figue 9-d
+##Figure 9-d
 postscript("./output data/Figure 9 - skuD.eps",width = 12.0, height = 4.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 plot(demand[4,],type="l",xlab="Weeks",ylab="Sales of SKU C",cex.lab=1.4,lwd=2,col=1)
 points(demand[4,],pch=1,col=1)
