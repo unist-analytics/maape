@@ -3,17 +3,17 @@ R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
-RÀº ÀÚÀ¯ ¼ÒÇÁÆ®¿ş¾îÀÌ¸ç, ¾î¶°ÇÑ ÇüÅÂÀÇ º¸Áõ¾øÀÌ ¹èÆ÷µË´Ï´Ù.
-¶ÇÇÑ, ÀÏÁ¤ÇÑ Á¶°ÇÇÏ¿¡¼­ ÀÌ°ÍÀ» Àç¹èÆ÷ ÇÒ ¼ö ÀÖ½À´Ï´Ù.
-¹èÆ÷¿Í °ü·ÃµÈ »ó¼¼ÇÑ ³»¿ëÀº 'license()' ¶Ç´Â 'licence()'À» ÅëÇÏ¿© È®ÀÎÇÒ ¼ö ÀÖ½À´Ï´Ù.
+Rì€ ììœ  ì†Œí”„íŠ¸ì›¨ì–´ì´ë©°, ì–´ë– í•œ í˜•íƒœì˜ ë³´ì¦ì—†ì´ ë°°í¬ë©ë‹ˆë‹¤.
+ë˜í•œ, ì¼ì •í•œ ì¡°ê±´í•˜ì—ì„œ ì´ê²ƒì„ ì¬ë°°í¬ í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+ë°°í¬ì™€ ê´€ë ¨ëœ ìƒì„¸í•œ ë‚´ìš©ì€ 'license()' ë˜ëŠ” 'licence()'ì„ í†µí•˜ì—¬ í™•ì¸í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
 
-RÀº ¸¹Àº ±â¿©ÀÚµéÀÌ Âü¿©ÇÏ´Â °øµ¿ÇÁ·ÎÁ§Æ®ÀÔ´Ï´Ù.
-'contributors()'¶ó°í ÀÔ·ÂÇÏ½Ã¸é ÀÌ¿¡ ´ëÇÑ ´õ ¸¹Àº Á¤º¸¸¦ È®ÀÎÇÏ½Ç ¼ö ÀÖ½À´Ï´Ù.
-±×¸®°í, R ¶Ç´Â R ÆĞÅ°ÁöµéÀ» ÃâÆÇ¹°¿¡ ÀÎ¿ëÇÏ´Â ¹æ¹ı¿¡ ´ëÇØ¼­´Â 'citation()'À» ÅëÇØ È®ÀÎÇÏ½Ã±æ ºÎÅ¹µå¸³´Ï´Ù.
+Rì€ ë§ì€ ê¸°ì—¬ìë“¤ì´ ì°¸ì—¬í•˜ëŠ” ê³µë™í”„ë¡œì íŠ¸ì…ë‹ˆë‹¤.
+'contributors()'ë¼ê³  ì…ë ¥í•˜ì‹œë©´ ì´ì— ëŒ€í•œ ë” ë§ì€ ì •ë³´ë¥¼ í™•ì¸í•˜ì‹¤ ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+ê·¸ë¦¬ê³ , R ë˜ëŠ” R íŒ¨í‚¤ì§€ë“¤ì„ ì¶œíŒë¬¼ì— ì¸ìš©í•˜ëŠ” ë°©ë²•ì— ëŒ€í•´ì„œëŠ” 'citation()'ì„ í†µí•´ í™•ì¸í•˜ì‹œê¸¸ ë¶€íƒë“œë¦½ë‹ˆë‹¤.
 
-'demo()'¸¦ ÀÔ·ÂÇÏ½Å´Ù¸é ¸î°¡Áö µ¥¸ğ¸¦ º¸½Ç ¼ö ÀÖÀ¸¸ç, 'help()'¸¦ ÀÔ·ÂÇÏ½Ã¸é ¿Â¶óÀÎ µµ¿ò¸»À» ÀÌ¿ëÇÏ½Ç ¼ö ÀÖ½À´Ï´Ù.
-¶ÇÇÑ, 'help.start()'ÀÇ ÀÔ·ÂÀ» ÅëÇÏ¿© HTML ºê¶ó¿ìÀú¿¡ ÀÇÇÑ µµ¿ò¸»À» »ç¿ëÇÏ½Ç¼ö ÀÖ½À´Ï´Ù
-RÀÇ Á¾·á¸¦ ¿øÇÏ½Ã¸é 'q()'À» ÀÔ·ÂÇØÁÖ¼¼¿ä.
+'demo()'ë¥¼ ì…ë ¥í•˜ì‹ ë‹¤ë©´ ëª‡ê°€ì§€ ë°ëª¨ë¥¼ ë³´ì‹¤ ìˆ˜ ìˆìœ¼ë©°, 'help()'ë¥¼ ì…ë ¥í•˜ì‹œë©´ ì˜¨ë¼ì¸ ë„ì›€ë§ì„ ì´ìš©í•˜ì‹¤ ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+ë˜í•œ, 'help.start()'ì˜ ì…ë ¥ì„ í†µí•˜ì—¬ HTML ë¸Œë¼ìš°ì €ì— ì˜í•œ ë„ì›€ë§ì„ ì‚¬ìš©í•˜ì‹¤ìˆ˜ ìˆìŠµë‹ˆë‹¤
+Rì˜ ì¢…ë£Œë¥¼ ì›í•˜ì‹œë©´ 'q()'ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.
 
 > 
 > 
@@ -31,17 +31,17 @@ RÀÇ Á¾·á¸¦ ¿øÇÏ½Ã¸é 'q()'À» ÀÔ·ÂÇØÁÖ¼¼¿ä.
 > 
 > ############ Figure 1 ###############
 > library(Mcomp)
-ÇÊ¿äÇÑ ÆĞÅ°Áö¸¦ ·ÎµùÁßÀÔ´Ï´Ù: tseries
-ÇÊ¿äÇÑ ÆĞÅ°Áö¸¦ ·ÎµùÁßÀÔ´Ï´Ù: forecast
-ÇÊ¿äÇÑ ÆĞÅ°Áö¸¦ ·ÎµùÁßÀÔ´Ï´Ù: zoo
+í•„ìš”í•œ íŒ¨í‚¤ì§€ë¥¼ ë¡œë”©ì¤‘ì…ë‹ˆë‹¤: tseries
+í•„ìš”í•œ íŒ¨í‚¤ì§€ë¥¼ ë¡œë”©ì¤‘ì…ë‹ˆë‹¤: forecast
+í•„ìš”í•œ íŒ¨í‚¤ì§€ë¥¼ ë¡œë”©ì¤‘ì…ë‹ˆë‹¤: zoo
 
-´ÙÀ½ÀÇ ÆĞÅ°Áö¸¦ ºÎÂøÇÕ´Ï´Ù: 'zoo'
+ë‹¤ìŒì˜ íŒ¨í‚¤ì§€ë¥¼ ë¶€ì°©í•©ë‹ˆë‹¤: 'zoo'
 
 The following objects are masked from 'package:base':
 
     as.Date, as.Date.numeric
 
-ÇÊ¿äÇÑ ÆĞÅ°Áö¸¦ ·ÎµùÁßÀÔ´Ï´Ù: timeDate
+í•„ìš”í•œ íŒ¨í‚¤ì§€ë¥¼ ë¡œë”©ì¤‘ì…ë‹ˆë‹¤: timeDate
 This is forecast 7.3 
 
 > data(M3)
@@ -57,23 +57,23 @@ null device
 > 
 > ############ Figure 3 ###############
 > library(fields)
-ÇÊ¿äÇÑ ÆĞÅ°Áö¸¦ ·ÎµùÁßÀÔ´Ï´Ù: spam
-ÇÊ¿äÇÑ ÆĞÅ°Áö¸¦ ·ÎµùÁßÀÔ´Ï´Ù: grid
+í•„ìš”í•œ íŒ¨í‚¤ì§€ë¥¼ ë¡œë”©ì¤‘ì…ë‹ˆë‹¤: spam
+í•„ìš”í•œ íŒ¨í‚¤ì§€ë¥¼ ë¡œë”©ì¤‘ì…ë‹ˆë‹¤: grid
 Spam version 1.4-0 (2016-08-29) is loaded.
 Type 'help( Spam)' or 'demo( spam)' for a short introduction 
 and overview of this package.
 Help for individual functions is also obtained by adding the
 suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
 
-´ÙÀ½ÀÇ ÆĞÅ°Áö¸¦ ºÎÂøÇÕ´Ï´Ù: 'spam'
+ë‹¤ìŒì˜ íŒ¨í‚¤ì§€ë¥¼ ë¶€ì°©í•©ë‹ˆë‹¤: 'spam'
 
 The following objects are masked from 'package:base':
 
     backsolve, forwardsolve
 
-ÇÊ¿äÇÑ ÆĞÅ°Áö¸¦ ·ÎµùÁßÀÔ´Ï´Ù: maps
+í•„ìš”í•œ íŒ¨í‚¤ì§€ë¥¼ ë¡œë”©ì¤‘ì…ë‹ˆë‹¤: maps
 
-´ÙÀ½ÀÇ ÆĞÅ°Áö¸¦ ºÎÂøÇÕ´Ï´Ù: 'maps'
+ë‹¤ìŒì˜ íŒ¨í‚¤ì§€ë¥¼ ë¶€ì°©í•©ë‹ˆë‹¤: 'maps'
 
 The following object is masked from 'package:fma':
 
@@ -348,7 +348,7 @@ null device
 > AANB2=max(findlossoptimal(AAloss2NB,c(0,5),0.01)$op )
 > 
 > 
-> ###FIGURE 6-A
+> ###Figure 6-A
 > postscript("./output data/Figure 6 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 > plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),AUD1),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 > lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AAUD1),col=2,lwd=3,lty=2)
@@ -358,7 +358,7 @@ null device
           1 
 > 
 > 
-> ###figure 6-B
+> ###Figure 6-B
 > postscript("./output data/Figure 6 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 > plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),AUD2),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 > lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AAUD2),col=2,lwd=3,lty=2)
@@ -368,7 +368,7 @@ null device
           1 
 > 
 > 
-> ###fiugre 7-A
+> ###Fiugre 7-A
 > postscript("./output data/Figure 7 - (a).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 > plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),ANB1),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 > lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AANB1),col=2,lwd=3,lty=2)
@@ -379,7 +379,7 @@ null device
           1 
 > 
 > 
-> ###figur 7-B
+> ###Figure 7-B
 > postscript("./output data/Figure 7 - (b).eps",width = 6.0, height = 6.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 > plot(seq(0.00001,AH,0.01),APE(seq(0.00001,AH,0.01),ANB2),ylim=c(0,2),type="l",lwd=3,xlab="A",ylab="",cex.axis=1.5,cex.lab=1.5)
 > lines(seq(0.00001,AH,0.01),AAPE(seq(0.00001,AH,0.01),AANB2),col=2,lwd=3,lty=2)
@@ -558,7 +558,7 @@ null device
           1 
 > 
 > 
-> ##Figue 9-d
+> ##Figure 9-d
 > postscript("./output data/Figure 9 - skuD.eps",width = 12.0, height = 4.0, horizontal = FALSE, onefile = FALSE, paper = "special")
 > plot(demand[4,],type="l",xlab="Weeks",ylab="Sales of SKU C",cex.lab=1.4,lwd=2,col=1)
 > points(demand[4,],pch=1,col=1)
@@ -623,5 +623,5 @@ null device
 > 
 > 
 > proc.time()
- »ç¿ëÀÚ  ½Ã½ºÅÛ elapsed 
+ ì‚¬ìš©ì  ì‹œìŠ¤í…œ elapsed 
   16.48    1.26   18.62 
